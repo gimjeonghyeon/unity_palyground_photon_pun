@@ -1,9 +1,14 @@
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 
 namespace Com.Playground.Photon
 {
-    public class Launcher : MonoBehaviour
+    /// <summary>
+    /// MonoBehaviourPunCallbacks 을 상속받고 OnEnable(), OnDisable() 을 override 한다면 base 클래스의 OnEnable(), OnDisable() 호출이 필요
+    /// (AddCallbackTarget, RemoveCallbackTarget 처리를 해주고 있기 때문)
+    /// </summary>
+    public class Launcher : MonoBehaviourPunCallbacks
     {
         #region Private Serializable Fields
 
@@ -30,6 +35,31 @@ namespace Com.Playground.Photon
         private void Start()
         {
             Connect();
+        }
+
+        #endregion
+
+        #region MonoBehaviourPunCallbacks Callbacks
+
+        public override void OnConnectedToMaster()
+        {
+            Debug.Log("OnConnectedToMaster");
+            PhotonNetwork.JoinRandomRoom();
+        }
+
+        public override void OnDisconnected(DisconnectCause cause)
+        {
+            Debug.Log("OnDisconnected");
+        }
+
+        public override void OnJoinRandomFailed(short returnCode, string message)
+        {
+            PhotonNetwork.CreateRoom(null, new RoomOptions());
+        }
+
+        public override void OnJoinedRoom()
+        {
+            Debug.Log("OnJoinedRoom");
         }
 
         #endregion
